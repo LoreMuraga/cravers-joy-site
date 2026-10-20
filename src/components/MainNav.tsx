@@ -1,11 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect, Suspense } from 'react'
 
 function MainNavContent() {
   const pathname = usePathname()
+  const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
 
   const navLinks = [
@@ -17,9 +18,8 @@ function MainNavContent() {
   ]
 
   const openOrder = (offerDiscount?: number) => {
-    if (typeof window !== 'undefined' && (window as any).openOrder) {
-      (window as any).openOrder(undefined, offerDiscount)
-    }
+    // Redirect to shop page for custom order
+    router.push('/shop')
   }
 
   return (
@@ -53,7 +53,7 @@ function MainNavContent() {
             </div>
           </Link>
 
-          <div className="hidden md:flex items-center gap-6 sm:gap-8 text-sm font-medium text-mahogany-soft">
+          <div className="hidden md:flex items-center gap-4 sm:gap-6 text-sm font-medium text-mahogany-soft">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -65,20 +65,22 @@ function MainNavContent() {
             ))}
           </div>
 
-          <button
-            onClick={() => openOrder()}
-            className="bg-mahogany hover:bg-mahogany-light text-cream-surface px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-semibold tracking-wider uppercase border border-gold/30 shadow-md transition-all hover:shadow-lg hidden sm:block"
-          >
-            Custom Order
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => openOrder()}
+              className="bg-mahogany hover:bg-mahogany-light text-cream-surface px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-semibold tracking-wider uppercase border border-gold/30 shadow-md transition-all hover:shadow-lg hidden sm:block"
+            >
+              Custom Order
+            </button>
 
-          <button
-            className="md:hidden p-1.5 sm:p-2 text-mahogany hover:text-blush text-xl sm:text-2xl"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? '✕' : '☰'}
-          </button>
+            <button
+              className="md:hidden p-2 text-mahogany hover:text-blush text-xl min-w-[44px] min-h-[44px] flex items-center justify-center"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? '✕' : '☰'}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -89,7 +91,7 @@ function MainNavContent() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={pathname === link.href ? 'text-blush' : 'text-mahogany-soft hover:text-blush transition-colors py-2 text-sm'}
+                  className={pathname === link.href ? 'text-blush py-3 text-sm min-h-[48px] flex items-center' : 'text-mahogany-soft hover:text-blush transition-colors py-3 text-sm min-h-[48px] flex items-center'}
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}
@@ -97,7 +99,7 @@ function MainNavContent() {
               ))}
               <button
                 onClick={() => { openOrder(); setIsOpen(false); }}
-                className="bg-mahogany hover:bg-mahogany-light text-cream-surface px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-semibold tracking-wider uppercase border border-gold/30 shadow-md transition-all"
+                className="bg-mahogany hover:bg-mahogany-light text-cream-surface px-3 sm:px-5 py-3 sm:py-3.5 rounded-full text-[10px] sm:text-xs font-semibold tracking-wider uppercase border border-gold/30 shadow-md transition-all min-h-[48px]"
               >
                 Custom Order
               </button>

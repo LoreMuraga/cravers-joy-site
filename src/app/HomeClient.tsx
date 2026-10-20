@@ -140,21 +140,21 @@ export default function HomeClient({
         style={{
           backgroundColor: '#FFFBF8',
           width: '100%',
-          padding: '40px 0 60px 0',
+          padding: 'clamp(24px, 4vw, 40px) 0 clamp(36px, 5vw, 60px) 0',
         }}
       >
         <div
           style={{
             maxWidth: '1280px',
             margin: '0 auto',
-            padding: '0 32px',
+            padding: '0 clamp(16px, 4vw, 32px)',
           }}
         >
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-              gap: '48px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: 'clamp(24px, 4vw, 48px)',
               alignItems: 'center',
             }}
           >
@@ -164,16 +164,16 @@ export default function HomeClient({
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: 'clamp(4px, 1vw, 6px)',
                   backgroundColor: 'rgba(230, 57, 103, 0.08)',
                   color: '#E63967',
-                  padding: '8px 18px',
+                  padding: 'clamp(6px, 1vw, 8px) clamp(12px, 2vw, 18px)',
                   borderRadius: '30px',
-                  fontSize: '12px',
+                  fontSize: 'clamp(10px, 2vw, 12px)',
                   fontWeight: '700',
                   letterSpacing: '1px',
                   textTransform: 'uppercase',
-                  marginBottom: '20px',
+                  marginBottom: 'clamp(16px, 3vw, 20px)',
                 }}
               >
                 ✨ Handcrafted Perfection
@@ -182,11 +182,11 @@ export default function HomeClient({
               <h1
                 style={{
                   fontFamily: 'Cormorant Garamond, Georgia, serif',
-                  fontSize: 'clamp(40px, 5vw, 64px)',
+                  fontSize: 'clamp(32px, 5vw, 64px)',
                   fontWeight: '700',
                   lineHeight: '1.08',
                   color: '#2D1513',
-                  marginBottom: '20px',
+                  marginBottom: 'clamp(16px, 3vw, 20px)',
                   letterSpacing: '-0.5px',
                 }}
               >
@@ -198,11 +198,11 @@ export default function HomeClient({
 
               <p
                 style={{
-                  fontSize: '16px',
+                  fontSize: 'clamp(14px, 2vw, 16px)',
                   lineHeight: '1.7',
                   color: '#6A4C45',
-                  marginBottom: '32px',
-                  maxWidth: '500px',
+                  marginBottom: 'clamp(24px, 4vw, 32px)',
+                  maxWidth: '100%',
                 }}
               >
                 Milka bakes for the days people remember. Custom wedding tiers,
@@ -211,20 +211,21 @@ export default function HomeClient({
               </p>
 
               {/* BUTTON GROUP */}
-              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '40px' }}>
+              <div style={{ display: 'flex', gap: 'clamp(12px, 2vw, 16px)', flexWrap: 'wrap', marginBottom: 'clamp(32px, 4vw, 40px)' }}>
                 <button
                   onClick={() => openOrder()}
                   style={{
                     backgroundColor: '#E63967',
                     color: '#FFFFFF',
                     border: 'none',
-                    padding: '16px 32px',
+                    padding: 'clamp(12px, 2vw, 16px) clamp(20px, 3vw, 32px)',
                     borderRadius: '50px',
-                    fontSize: '15px',
+                    fontSize: 'clamp(13px, 2vw, 15px)',
                     fontWeight: '600',
                     cursor: 'pointer',
                     boxShadow: '0 8px 20px rgba(230, 57, 103, 0.25)',
                     transition: 'all 0.2s ease',
+                    minHeight: '44px',
                   }}
                 >
                   Start Custom Order
@@ -236,15 +237,16 @@ export default function HomeClient({
                     backgroundColor: 'transparent',
                     color: '#2D1513',
                     border: '2px solid #2D1513',
-                    padding: '14px 30px',
+                    padding: 'clamp(12px, 2vw, 14px) clamp(20px, 3vw, 30px)',
                     borderRadius: '50px',
-                    fontSize: '15px',
+                    fontSize: 'clamp(13px, 2vw, 15px)',
                     fontWeight: '600',
                     textDecoration: 'none',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '8px',
+                    gap: 'clamp(6px, 1vw, 8px)',
                     transition: 'all 0.2s ease',
+                    minHeight: '44px',
                   }}
                 >
                   Explore Catalog →
@@ -255,22 +257,23 @@ export default function HomeClient({
               <div
                 style={{
                   display: 'flex',
-                  gap: '36px',
+                  gap: 'clamp(20px, 4vw, 36px)',
                   borderTop: '1px solid #EFE4DE',
-                  paddingTop: '24px',
+                  paddingTop: 'clamp(20px, 3vw, 24px)',
+                  flexWrap: 'wrap',
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#2D1513' }}>100%</div>
-                  <div style={{ fontSize: '12px', color: '#7A5C55' }}>Fresh Ingredients</div>
+                  <div style={{ fontSize: 'clamp(18px, 3vw, 22px)', fontWeight: '800', color: '#2D1513' }}>100%</div>
+                  <div style={{ fontSize: 'clamp(10px, 2vw, 12px)', color: '#7A5C55' }}>Fresh Ingredients</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#2D1513' }}>500+</div>
-                  <div style={{ fontSize: '12px', color: '#7A5C55' }}>Weddings & Events</div>
+                  <div style={{ fontSize: 'clamp(18px, 3vw, 22px)', fontWeight: '800', color: '#2D1513' }}>500+</div>
+                  <div style={{ fontSize: 'clamp(10px, 2vw, 12px)', color: '#7A5C55' }}>Weddings & Events</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '22px', fontWeight: '800', color: '#2D1513' }}>4.9 ★</div>
-                  <div style={{ fontSize: '12px', color: '#7A5C55' }}>Customer Rating</div>
+                  <div style={{ fontSize: 'clamp(18px, 3vw, 22px)', fontWeight: '800', color: '#2D1513' }}>4.9 ★</div>
+                  <div style={{ fontSize: 'clamp(10px, 2vw, 12px)', color: '#7A5C55' }}>Customer Rating</div>
                 </div>
               </div>
             </div>
@@ -279,10 +282,10 @@ export default function HomeClient({
             <div
               style={{
                 position: 'relative',
-                borderRadius: '28px',
+                borderRadius: 'clamp(16px, 3vw, 28px)',
                 overflow: 'hidden',
                 boxShadow: '0 24px 48px rgba(45, 21, 19, 0.12)',
-                height: '480px',
+                height: 'clamp(300px, 50vw, 480px)',
                 backgroundColor: '#F8F1ED',
                 border: '1px solid #EFE4DE',
               }}
@@ -301,25 +304,25 @@ export default function HomeClient({
               <div
                 style={{
                   position: 'absolute',
-                  bottom: '20px',
-                  left: '20px',
+                  bottom: 'clamp(12px, 2vw, 20px)',
+                  left: 'clamp(12px, 2vw, 20px)',
                   backgroundColor: 'rgba(255, 255, 255, 0.92)',
                   backdropFilter: 'blur(10px)',
-                  padding: '12px 20px',
-                  borderRadius: '16px',
+                  padding: 'clamp(10px, 2vw, 12px) clamp(16px, 3vw, 20px)',
+                  borderRadius: 'clamp(12px, 2vw, 16px)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
+                  gap: 'clamp(10px, 2vw, 12px)',
                   boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
                   border: '1px solid rgba(255, 255, 255, 0.5)',
                 }}
               >
-                <span style={{ fontSize: '24px' }}>🎂</span>
+                <span style={{ fontSize: 'clamp(20px, 4vw, 24px)' }}>🎂</span>
                 <div>
-                  <div style={{ fontSize: '13px', fontWeight: '700', color: '#2D1513' }}>
+                  <div style={{ fontSize: 'clamp(11px, 2vw, 13px)', fontWeight: '700', color: '#2D1513' }}>
                     Crafted by Baker Milka
                   </div>
-                  <div style={{ fontSize: '11px', color: '#7A5C55' }}>
+                  <div style={{ fontSize: 'clamp(10px, 1.5vw, 11px)', color: '#7A5C55' }}>
                     Custom designs made to order
                   </div>
                 </div>
@@ -335,7 +338,7 @@ export default function HomeClient({
         style={{
           backgroundColor: '#F8F1ED',
           width: '100%',
-          padding: '40px 0',
+          padding: 'clamp(24px, 4vw, 40px) 0',
           borderTop: '1px solid #EFE4DE',
           borderBottom: '1px solid #EFE4DE',
         }}
@@ -344,7 +347,7 @@ export default function HomeClient({
           style={{
             maxWidth: '1280px',
             margin: '0 auto',
-            padding: '0 32px',
+            padding: '0 clamp(16px, 4vw, 32px)',
           }}
         >
           <div
@@ -352,18 +355,20 @@ export default function HomeClient({
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'flex-end',
-              marginBottom: '32px',
+              marginBottom: 'clamp(24px, 4vw, 32px)',
+              flexWrap: 'wrap',
+              gap: 'clamp(12px, 2vw, 16px)',
             }}
           >
             <div>
               <span
                 style={{
                   color: '#E63967',
-                  fontSize: '12px',
+                  fontSize: 'clamp(10px, 2vw, 12px)',
                   fontWeight: '700',
                   letterSpacing: '1px',
                   textTransform: 'uppercase',
-                  marginBottom: '8px',
+                  marginBottom: 'clamp(6px, 1vw, 8px)',
                   display: 'block',
                 }}
               >
@@ -372,7 +377,7 @@ export default function HomeClient({
               <h2
                 style={{
                   fontFamily: 'Cormorant Garamond, Georgia, serif',
-                  fontSize: 'clamp(28px, 4vw, 48px)',
+                  fontSize: 'clamp(24px, 4vw, 48px)',
                   fontWeight: '700',
                   color: '#2D1513',
                 }}
@@ -384,12 +389,12 @@ export default function HomeClient({
               href="/shop"
               style={{
                 color: '#E63967',
-                fontSize: '14px',
+                fontSize: 'clamp(12px, 2vw, 14px)',
                 fontWeight: '600',
                 textDecoration: 'none',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '4px',
+                gap: 'clamp(3px, 0.5vw, 4px)',
               }}
             >
               View All →
@@ -399,8 +404,8 @@ export default function HomeClient({
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-              gap: '16px',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+              gap: 'clamp(12px, 2vw, 16px)',
             }}
           >
             {categories.slice(0, 6).map((category) => (
@@ -409,12 +414,13 @@ export default function HomeClient({
                 onClick={() => (window.location.href = `/shop?category=${category.name}`)}
                 style={{
                   backgroundColor: '#FFFFFF',
-                  padding: '20px',
-                  borderRadius: '16px',
+                  padding: 'clamp(16px, 3vw, 20px)',
+                  borderRadius: 'clamp(12px, 2vw, 16px)',
                   textAlign: 'center',
                   border: '1px solid #EFE4DE',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
+                  minHeight: '120px',
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = '#E63967'
@@ -427,11 +433,11 @@ export default function HomeClient({
               >
                 <div
                   style={{
-                    width: '64px',
-                    height: '64px',
+                    width: 'clamp(48px, 8vw, 64px)',
+                    height: 'clamp(48px, 8vw, 64px)',
                     borderRadius: '50%',
                     backgroundColor: '#F8F1ED',
-                    margin: '0 auto 12px',
+                    margin: '0 auto clamp(10px, 2vw, 12px)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -445,20 +451,20 @@ export default function HomeClient({
                       style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                     />
                   ) : (
-                    <span style={{ fontSize: '24px' }}>{category.emoji || '🎂'}</span>
+                    <span style={{ fontSize: 'clamp(20px, 4vw, 24px)' }}>{category.emoji || '🎂'}</span>
                   )}
                 </div>
                 <h4
                   style={{
-                    fontSize: '14px',
+                    fontSize: 'clamp(12px, 2vw, 14px)',
                     fontWeight: '700',
                     color: '#2D1513',
-                    marginBottom: '4px',
+                    marginBottom: 'clamp(3px, 0.5vw, 4px)',
                   }}
                 >
                   {category.name}
                 </h4>
-                <p style={{ fontSize: '12px', color: '#7A5C55' }}>
+                <p style={{ fontSize: 'clamp(10px, 2vw, 12px)', color: '#7A5C55' }}>
                   {category.description || 'Celebration treats'}
                 </p>
               </div>
@@ -1093,12 +1099,12 @@ export default function HomeClient({
       <div
         style={{
           position: 'fixed',
-          bottom: '24px',
-          right: '24px',
+          bottom: 'clamp(16px, 4vw, 24px)',
+          right: 'clamp(16px, 4vw, 24px)',
           zIndex: 40,
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px',
+          gap: 'clamp(10px, 2vw, 12px)',
         }}
       >
         <button
@@ -1107,9 +1113,9 @@ export default function HomeClient({
             backgroundColor: '#E63967',
             color: '#FFFFFF',
             border: 'none',
-            padding: '14px 20px',
+            padding: 'clamp(12px, 3vw, 14px) clamp(16px, 4vw, 20px)',
             borderRadius: '50px',
-            fontSize: '14px',
+            fontSize: 'clamp(12px, 3vw, 14px)',
             fontWeight: '600',
             cursor: 'pointer',
             boxShadow: '0 8px 24px rgba(230, 57, 103, 0.3)',
@@ -1117,7 +1123,8 @@ export default function HomeClient({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
+            gap: 'clamp(6px, 1.5vw, 8px)',
+            minHeight: '44px',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.05)'
@@ -1126,7 +1133,7 @@ export default function HomeClient({
             e.currentTarget.style.transform = 'scale(1)'
           }}
         >
-          <span style={{ fontSize: '18px' }}>🛒</span>
+          <span style={{ fontSize: 'clamp(16px, 4vw, 18px)' }}>🛒</span>
           <span style={{ display: 'none' }}>Order Now</span>
         </button>
         <a
@@ -1136,17 +1143,18 @@ export default function HomeClient({
           style={{
             backgroundColor: '#10B981',
             color: '#FFFFFF',
-            padding: '14px 20px',
+            padding: 'clamp(12px, 3vw, 14px) clamp(16px, 4vw, 20px)',
             borderRadius: '50px',
-            fontSize: '14px',
+            fontSize: 'clamp(12px, 3vw, 14px)',
             fontWeight: '600',
             boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)',
             transition: 'all 0.2s ease',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px',
+            gap: 'clamp(6px, 1.5vw, 8px)',
             textDecoration: 'none',
+            minHeight: '44px',
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'scale(1.05)'
@@ -1155,7 +1163,7 @@ export default function HomeClient({
             e.currentTarget.style.transform = 'scale(1)'
           }}
         >
-          <span style={{ fontSize: '20px' }}>💬</span>
+          <span style={{ fontSize: 'clamp(18px, 4vw, 20px)' }}>💬</span>
           <div style={{ textAlign: 'left', display: 'none' }}>
             <span
               style={{

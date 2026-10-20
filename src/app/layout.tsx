@@ -21,6 +21,13 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Cravers Joy Cakes | Wedding, Birthday & Kids' Cakes",
   description: "Custom cakes for every occasion. Wedding cakes, birthday cakes, kids' themed cakes, and more. Order online from Kenyatta Road, Kiambu.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
+  themeColor: "#FAF6F0",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

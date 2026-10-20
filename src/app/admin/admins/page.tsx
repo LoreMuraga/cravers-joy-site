@@ -1,183 +1,216 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 
-interface AdminUser {
-  id: string
-  user_id: string
-  email: string
-  role: string
-  is_approved: boolean
-  approved_by: string | null
-  approved_at: string | null
-  created_at: string
-}
-
-export default function AdminsPage() {
-  const [admins, setAdmins] = useState<AdminUser[]>([])
+export default function AdminManagementPage() {
+  const [admins, setAdmins] = useState<any[]>([])
+  const [newEmail, setNewEmail] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [newRole, setNewRole] = useState('admin')
   const [loading, setLoading] = useState(true)
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [adding, setAdding] = useState(false)
+  const [message, setMessage] = useState('')
+  const [currentUserRole, setCurrentUserRole] = useState('')
+  const [currentUserId, setCurrentUserId] = useState('')
 
   useEffect(() => {
-    async function fetchData() {
-      const { data: { user } } = await supabase.auth.getUser()
-      setCurrentUser(user)
-
-      const { data } = await supabase
-        .from('admin_users')
-        .select('*')
-        .order('created_at', { ascending: false })
-
-      if (data) setAdmins(data)
-      setLoading(false)
-    }
-
-    fetchData()
+    fetchAdmins()
+    fetchCurrentUser()
   }, [])
 
-  const handleApprove = async (adminId: string, userId: string) => {
-    // Find current user's admin_users record
-    const { data: currentAdmin } = await supabase
-      .from('admin_users')
-      .select('id')
-      .eq('user_id', currentUser?.id)
-      .single()
+  const fetchCurrentUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      setCurrentUserId(user.id)
+      const { data } = await supabase
+        .from('admin_users')
+        .select('role')
+        .eq('id', user.id)
+        .single()
+      if (data) setCurrentUserRole(data.role)
+    }
+  }
 
-    const { error } = await supabase
-      .from('admin_users')
-      .update({
-        is_approved: true,
-        approved_by: currentAdmin?.id,
-        approved_at: new Date().toISOString(),
+  const fetchAdmins = async () => {
+    const { data } = await supabase.from('admin_users').select('*').order('created_at', { ascending: false })
+    if (data) setAdmins(data)
+    setLoading(false)
+  }
+
+  const addAdmin = async () => {
+    if (!newEmail || !newPassword) {
+      setMessage('Please fill in all fields')
+      return
+    }
+
+    setAdding(true)
+    
+    // Create auth user
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: newEmail,
+      password: newPassword,
+    })
+
+    if (authError) {
+      setMessage('Error creating user: ' + authError.message)
+      setAdding(false)
+      return
+    }
+
+    if (authData.user) {
+      // Add to admin_users table
+      const { error: dbError } = await supabase.from('admin_users').insert({
+        id: authData.user.id,
+        email: newEmail,
+        role: newRole,
+        created_by: (await supabase.auth.getUser()).data.user?.id,
       })
-      .eq('id', adminId)
 
-    if (error) {
-      alert('Failed to approve admin: ' + error.message)
-      return
+      if (dbError) {
+        setMessage('Error adding admin: ' + dbError.message)
+      } else {
+        setMessage('Admin added successfully!')
+        setNewEmail('')
+        setNewPassword('')
+        fetchAdmins()
+        setTimeout(() => setMessage(''), 3000)
+      }
     }
 
-    setAdmins(admins.map(a => a.id === adminId ? { ...a, is_approved: true } : a))
+    setAdding(false)
   }
 
-  const handleReject = async (adminId: string, userId: string) => {
-    if (!confirm('Reject this admin request? This will delete their account.')) return
-
-    // Delete from auth.users (need to use admin client or Supabase dashboard)
-    // For now, just delete from admin_users table
+  const updateRole = async (adminId: string, newRole: string) => {
     const { error } = await supabase
       .from('admin_users')
-      .delete()
+      .update({ role: newRole })
       .eq('id', adminId)
 
     if (error) {
-      alert('Failed to reject admin')
-      return
+      setMessage('Error updating role: ' + error.message)
+    } else {
+      setMessage('Role updated successfully!')
+      fetchAdmins()
+      setTimeout(() => setMessage(''), 3000)
     }
-
-    setAdmins(admins.filter(a => a.id !== adminId))
   }
 
-  const handleRemove = async (adminId: string, userId: string) => {
-    if (!confirm('Remove this admin? This will revoke their access.')) return
+  const deleteAdmin = async (adminId: string) => {
+    if (!confirm('Are you sure you want to remove this admin?')) return
 
-    const { error } = await supabase
-      .from('admin_users')
-      .delete()
-      .eq('id', adminId)
+    const { error } = await supabase.from('admin_users').delete().eq('id', adminId)
 
     if (error) {
-      alert('Failed to remove admin')
-      return
+      setMessage('Error removing admin: ' + error.message)
+    } else {
+      setMessage('Admin removed successfully!')
+      fetchAdmins()
+      setTimeout(() => setMessage(''), 3000)
     }
-
-    setAdmins(admins.filter(a => a.id !== adminId))
   }
 
-  if (loading) return <div className="text-center py-12">Loading...</div>
-
-  const pendingAdmins = admins.filter(a => !a.is_approved)
-  const approvedAdmins = admins.filter(a => a.is_approved)
+  if (loading) {
+    return <div className="p-8">Loading...</div>
+  }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-amber-900 mb-8">Admin Management</h1>
+    <div className="p-6 md:p-8">
+      <h1 className="text-2xl md:text-3xl font-bold text-mahogany mb-6">Admin Management</h1>
 
-      {/* Pending Approvals */}
-      {pendingAdmins.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-amber-900 mb-4">
-            Pending Approvals ({pendingAdmins.length})
-          </h2>
-          <div className="space-y-4">
-            {pendingAdmins.map((admin) => (
-              <div
-                key={admin.id}
-                className="bg-white rounded-xl shadow-sm p-6 border border-amber-100"
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h3 className="font-semibold text-amber-900">{admin.email}</h3>
-                    <p className="text-sm text-amber-600">
-                      Role: {admin.role} · Requested: {new Date(admin.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleApprove(admin.id, admin.user_id)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => handleReject(admin.id, admin.user_id)}
-                      className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700"
-                    >
-                      Reject
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      {message && (
+        <div className={`p-4 rounded-lg mb-6 ${message.includes('Error') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+          {message}
         </div>
       )}
 
-      {/* Approved Admins */}
-      <div>
-        <h2 className="text-xl font-semibold text-amber-900 mb-4">
-          Approved Admins ({approvedAdmins.length})
-        </h2>
-        <div className="space-y-4">
-          {approvedAdmins.map((admin) => (
-            <div
-              key={admin.id}
-              className="bg-white rounded-xl shadow-sm p-6 border border-amber-100"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-semibold text-amber-900">{admin.email}</h3>
-                  <p className="text-sm text-amber-600">
-                    Role: {admin.role} · Approved: {admin.approved_at ? new Date(admin.approved_at).toLocaleDateString() : 'N/A'}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleRemove(admin.id, admin.user_id)}
-                  className="text-red-600 hover:text-red-900 text-sm font-medium"
-                >
-                  Remove Access
-                </button>
-              </div>
-            </div>
-          ))}
+      {/* Add New Admin */}
+      <div className="bg-white rounded-xl border border-amber-200 p-6 mb-6">
+        <h2 className="text-lg font-semibold text-mahogany mb-4">Add New Admin</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            className="px-4 py-3 rounded-lg border border-amber-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="px-4 py-3 rounded-lg border border-amber-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+          />
+          <select
+            value={newRole}
+            onChange={(e) => setNewRole(e.target.value)}
+            className="px-4 py-3 rounded-lg border border-amber-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+          >
+            <option value="admin">Admin</option>
+            <option value="superadmin">Superadmin</option>
+          </select>
         </div>
+        <button
+          onClick={addAdmin}
+          disabled={adding}
+          className="bg-mahogany hover:bg-pink-600 text-white px-6 py-2 rounded-lg font-semibold disabled:opacity-50"
+        >
+          {adding ? 'Adding...' : 'Add Admin'}
+        </button>
+      </div>
 
-        {approvedAdmins.length === 0 && (
-          <div className="bg-white rounded-xl shadow-sm p-8 border border-amber-100 text-center text-amber-600">
-            No approved admins yet.
-          </div>
-        )}
+      {/* Admins List */}
+      <div className="bg-white rounded-xl border border-amber-200 overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-amber-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-mahogany">Email</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-mahogany">Role</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-mahogany">Created</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-mahogany">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {admins.map((admin) => (
+              <tr key={admin.id} className="border-t border-amber-200">
+                <td className="px-6 py-4 text-sm text-mahogany">{admin.email}</td>
+                <td className="px-6 py-4">
+                  {currentUserRole === 'superadmin' ? (
+                    <select
+                      value={admin.role}
+                      onChange={(e) => updateRole(admin.id, e.target.value)}
+                      className="px-3 py-1 rounded border border-amber-200 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    >
+                      <option value="admin">Admin</option>
+                      <option value="superadmin">Superadmin</option>
+                    </select>
+                  ) : (
+                    <span className="px-3 py-1 rounded bg-amber-100 text-sm font-medium capitalize">{admin.role}</span>
+                  )}
+                </td>
+                <td className="px-6 py-4 text-sm text-amber-700">
+                  {admin.created_at ? new Date(admin.created_at).toLocaleDateString() : '-'}
+                </td>
+                <td className="px-6 py-4">
+                  {currentUserRole === 'superadmin' && admin.id !== currentUserId && (
+                    <button
+                      onClick={() => deleteAdmin(admin.id)}
+                      className="text-red-600 hover:text-red-700 text-sm font-medium"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-4 text-sm text-amber-600">
+        <p><strong>Superadmin</strong> can manage all settings and assign roles.</p>
+        <p><strong>Admin</strong> can manage cakes, categories, and other content but cannot change admin roles.</p>
       </div>
     </div>
   )

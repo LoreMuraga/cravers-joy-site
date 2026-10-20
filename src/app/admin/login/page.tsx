@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
@@ -10,12 +10,13 @@ export default function AdminLogin() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [showManualRedirect, setShowManualRedirect] = useState(false)
+  const [success, setSuccess] = useState(false)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+    setSuccess(false)
 
     try {
       console.log('Starting login process...')
@@ -32,8 +33,13 @@ export default function AdminLogin() {
 
       console.log('Sign in successful, session:', !!data.session)
       
-      // Show manual redirect button permanently
-      setShowManualRedirect(true)
+      // Show success message
+      setSuccess(true)
+      
+      // Auto-redirect after 1.5 seconds
+      setTimeout(() => {
+        router.push('/admin/dashboard')
+      }, 1500)
       
     } catch (err: any) {
       console.error('Login error:', err)
@@ -57,6 +63,12 @@ export default function AdminLogin() {
           </div>
         )}
 
+        {success && (
+          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
+            ✓ Successful login! Redirecting to dashboard...
+          </div>
+        )}
+
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-amber-900 mb-2">
@@ -67,7 +79,8 @@ export default function AdminLogin() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 border border-amber-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-3 border border-amber-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent disabled:opacity-50"
               placeholder="admin@craversjoy.com"
             />
           </div>
@@ -81,17 +94,18 @@ export default function AdminLogin() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 border border-amber-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              disabled={loading || success}
+              className="w-full px-4 py-3 border border-amber-200 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent disabled:opacity-50"
               placeholder="••••••••"
             />
           </div>
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || success}
             className="w-full bg-pink-600 text-white py-3 rounded-lg font-semibold hover:bg-pink-700 transition-colors disabled:opacity-50"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Signing in...' : success ? 'Redirecting...' : 'Sign In'}
           </button>
         </form>
 
@@ -103,17 +117,6 @@ export default function AdminLogin() {
             Don't have an account? Sign up
           </a>
         </div>
-
-        {showManualRedirect && (
-          <div className="mt-6 text-center">
-            <a
-              href="/admin/dashboard"
-              className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
-            >
-              Go to Dashboard
-            </a>
-          </div>
-        )}
 
         <div className="mt-6 text-center pt-4 border-t border-amber-200">
           <a

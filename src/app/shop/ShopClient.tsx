@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface ShopClientProps {
   categories: any[]
@@ -16,42 +17,54 @@ export default function ShopClient({
   allCakes,
   selectedCategory,
 }: ShopClientProps) {
+  const router = useRouter()
   const [priceFilter, setPriceFilter] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('')
+  const [showMobileCategories, setShowMobileCategories] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768)
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const openOrder = (cakeId?: string, offerDiscount?: number) => {
-    if (typeof window !== 'undefined' && (window as any).openOrder) {
-      (window as any).openOrder(cakeId, offerDiscount)
+    if (cakeId) {
+      router.push(`/order?cakeId=${cakeId}`)
     }
   }
 
   // Helper to filter out image URLs and filenames from text
   const filterImageUrl = (text: string | null | undefined) => {
     if (!text) return ''
-    // Remove any http/https URLs
     let filtered = text.replace(/https?:\/\/[^\s]+/g, '')
-    // Remove common filename patterns like "WhatsApp Image 2026-10-13 at 21"
     filtered = filtered.replace(/WhatsApp Image \d{4}-\d{2}-\d{2} at \d{1,2}/gi, '')
-    // Remove other image filename patterns
     filtered = filtered.replace(/IMG-\d+/gi, '')
     filtered = filtered.replace(/image-\d+/gi, '')
     return filtered.trim()
   }
 
   // 1. Filter by Category / Price / Search query
-  let processedCakes = selectedCategory
-    ? allCakes.filter((cake: any) => cake.category_name === selectedCategory || cake.category === selectedCategory)
-    : cakes
+  // When a category is selected, use the pre-filtered cakes from the server
+  // Otherwise use all cakes
+  let processedCakes = selectedCategory ? cakes : allCakes
 
   if (priceFilter === 'under3000') {
     processedCakes = processedCakes.filter((cake: any) => cake.base_price < 3000)
   }
 
   if (searchQuery.trim() !== '') {
-    processedCakes = processedCakes.filter((cake: any) =>
-      cake.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (cake.description && cake.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    processedCakes = processedCakes.filter(
+      (cake: any) =>
+        cake.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (cake.description && cake.description.toLowerCase().includes(searchQuery.toLowerCase()))
     )
   }
 
@@ -71,20 +84,20 @@ export default function ShopClient({
       <div
         style={{
           background: 'linear-gradient(to bottom, rgba(230, 57, 103, 0.08), #FFFBF8)',
-          padding: '50px 0 60px 0',
+          padding: 'clamp(24px, 5vw, 40px) 0 clamp(30px, 5vw, 50px) 0',
           textAlign: 'center',
           borderBottom: '1px solid #EFE4DE',
         }}
       >
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 32px' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 clamp(16px, 4vw, 32px)' }}>
           <span
             style={{
               color: '#E63967',
-              fontSize: '11px',
+              fontSize: 'clamp(10px, 2vw, 11px)',
               fontWeight: '700',
               letterSpacing: '2px',
               textTransform: 'uppercase',
-              marginBottom: '8px',
+              marginBottom: 'clamp(6px, 1vw, 8px)',
               display: 'block',
             }}
           >
@@ -93,29 +106,30 @@ export default function ShopClient({
           <h1
             style={{
               fontFamily: 'Cormorant Garamond, Georgia, serif',
-              fontSize: 'clamp(36px, 5vw, 56px)',
+              fontSize: 'clamp(28px, 5vw, 56px)',
               fontWeight: '700',
               color: '#2D1513',
-              marginBottom: '10px',
+              marginBottom: 'clamp(8px, 1vw, 10px)',
             }}
           >
             {selectedCategory ? `${selectedCategory}` : 'Shop All Cakes'}
           </h1>
-          <p style={{ fontSize: '15px', color: '#7A5C55' }}>
+          <p style={{ fontSize: 'clamp(13px, 2vw, 15px)', color: '#7A5C55' }}>
             <Link href="/" style={{ color: '#E63967', textDecoration: 'none', fontWeight: '600' }}>Home</Link> » <span style={{ color: '#2D1513' }}>Shop</span>
           </p>
         </div>
       </div>
 
-      {/* MAIN LAYOUT WITH SIDEBAR & GRID */}
-      <section style={{ padding: '48px 0 80px 0' }}>
-        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 32px' }}>
+      {/* MAIN CONTENT SECTION */}
+      <section style={{ padding: 'clamp(24px, 4vw, 40px) 0 clamp(48px, 6vw, 80px) 0' }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 clamp(16px, 3vw, 24px)' }}>
           
+          {/* MAIN PAGE LAYOUT GRID */}
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '260px 1fr',
-              gap: '40px',
+              gridTemplateColumns: (isMobile && showMobileCategories) ? '1fr' : (!isMobile ? '260px 1fr' : '1fr'),
+              gap: 'clamp(16px, 3vw, 32px)',
               alignItems: 'start',
             }}
           >
@@ -123,111 +137,169 @@ export default function ShopClient({
             <aside
               style={{
                 backgroundColor: '#FFFFFF',
-                padding: '24px',
-                borderRadius: '20px',
+                padding: 'clamp(16px, 3vw, 20px)',
+                borderRadius: 'clamp(12px, 2vw, 20px)',
                 border: '1px solid #EFE4DE',
                 boxShadow: '0 4px 16px rgba(45, 21, 19, 0.04)',
-                position: 'sticky',
+                position: !isMobile ? 'sticky' : 'static',
                 top: '96px',
+                display: (isMobile && !showMobileCategories) ? 'none' : 'block',
               }}
             >
+              {/* Mobile category toggle button */}
+              {isMobile && (
+                <button
+                  onClick={() => setShowMobileCategories(!showMobileCategories)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    backgroundColor: '#2D1513',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    marginBottom: '16px',
+                    minHeight: '44px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  {showMobileCategories ? '✕ Hide Categories' : '📂 Show Categories'}
+                </button>
+              )}
               <h3
                 style={{
                   fontFamily: 'Cormorant Garamond, Georgia, serif',
-                  fontSize: '20px',
+                  fontSize: 'clamp(18px, 3vw, 20px)',
                   fontWeight: '700',
                   color: '#2D1513',
-                  marginBottom: '16px',
+                  marginBottom: 'clamp(12px, 2vw, 16px)',
                   borderBottom: '1px solid #F4ECE7',
-                  paddingBottom: '10px',
+                  paddingBottom: 'clamp(8px, 1vw, 10px)',
                 }}
               >
                 Categories
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(6px, 1vw, 8px)' }}>
                 <Link
                   href="/shop"
                   style={{
-                    padding: '10px 16px',
-                    borderRadius: '12px',
-                    fontSize: '14px',
+                    padding: 'clamp(10px, 2vw, 12px) clamp(12px, 2vw, 16px)',
+                    borderRadius: 'clamp(10px, 2vw, 12px)',
+                    fontSize: 'clamp(13px, 2vw, 14px)',
                     fontWeight: '600',
                     textDecoration: 'none',
-                    transition: 'all 0.2s ease',
                     backgroundColor: !selectedCategory ? '#2D1513' : 'transparent',
                     color: !selectedCategory ? '#FFFFFF' : '#5C3D36',
+                    minHeight: '44px',
+                    display: 'flex',
+                    alignItems: 'center',
                   }}
                 >
                   🎂 All Cakes
                 </Link>
-                {categories.map((category) => (
-                  <Link
-                    key={category.id}
-                    href={`/shop?category=${category.name}`}
-                    style={{
-                      padding: '10px 16px',
-                      borderRadius: '12px',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      textDecoration: 'none',
-                      transition: 'all 0.2s ease',
-                      backgroundColor: selectedCategory === category.name ? '#2D1513' : 'transparent',
-                      color: selectedCategory === category.name ? '#FFFFFF' : '#5C3D36',
-                    }}
-                  >
-                    ✨ {category.name}
-                  </Link>
-                ))}
+                {categories.map((category) => {
+                  const isActive = selectedCategory === category.name
+                  return (
+                    <Link
+                      key={category.id}
+                      href={`/shop?category=${category.name}`}
+                      style={{
+                        padding: 'clamp(10px, 2vw, 12px) clamp(12px, 2vw, 16px)',
+                        borderRadius: 'clamp(10px, 2vw, 12px)',
+                        fontSize: 'clamp(13px, 2vw, 14px)',
+                        fontWeight: '600',
+                        textDecoration: 'none',
+                        backgroundColor: isActive ? '#2D1513' : 'transparent',
+                        color: isActive ? '#FFFFFF' : '#5C3D36',
+                        minHeight: '44px',
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      ✨ {category.name}
+                    </Link>
+                  )
+                })}
               </div>
             </aside>
 
             {/* PRODUCT CONTENT AREA */}
             <div>
+              {/* Mobile Category Toggle */}
+              <button
+                onClick={() => setShowMobileCategories(!showMobileCategories)}
+                style={{
+                  width: '100%',
+                  padding: 'clamp(12px, 2vw, 16px) clamp(16px, 3vw, 20px)',
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #EFE4DE',
+                  borderRadius: 'clamp(10px, 2vw, 12px)',
+                  fontSize: 'clamp(13px, 2vw, 14px)',
+                  fontWeight: '600',
+                  color: '#2D1513',
+                  cursor: 'pointer',
+                  marginBottom: 'clamp(12px, 2vw, 16px)',
+                  textAlign: 'left',
+                  display: isMobile ? 'block' : 'none',
+                  minHeight: '44px',
+                }}
+              >
+                <span style={{ fontSize: 'clamp(14px, 2vw, 16px)', marginRight: '8px' }}>📂</span>
+                {showMobileCategories ? 'Hide Categories' : 'Show Categories'}
+              </button>
+
               {/* SEARCH & SORT TOOLS */}
               <div
                 style={{
                   backgroundColor: '#FFFFFF',
-                  padding: '20px',
-                  borderRadius: '20px',
+                  padding: 'clamp(16px, 3vw, 20px)',
+                  borderRadius: 'clamp(12px, 2vw, 20px)',
                   border: '1px solid #EFE4DE',
                   boxShadow: '0 4px 16px rgba(45, 21, 19, 0.04)',
-                  marginBottom: '32px',
+                  marginBottom: 'clamp(20px, 3vw, 28px)',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '16px',
+                  gap: 'clamp(12px, 2vw, 16px)',
                 }}
               >
-                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 'clamp(8px, 2vw, 12px)', flexWrap: 'wrap' }}>
                   <input
                     type="search"
-                    placeholder="Search cakes by name or flavor..."
+                    placeholder="Search cakes..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{
-                      padding: '12px 18px',
-                      borderRadius: '12px',
+                      padding: 'clamp(10px, 2vw, 12px) clamp(12px, 2vw, 16px)',
+                      borderRadius: 'clamp(10px, 2vw, 12px)',
                       border: '1px solid #EFE4DE',
-                      fontSize: '14px',
+                      fontSize: 'clamp(13px, 2vw, 14px)',
                       flex: 1,
-                      minWidth: '220px',
+                      minWidth: 'clamp(140px, 40vw, 150px)',
                       outline: 'none',
                       backgroundColor: '#FAF6F0',
                       color: '#2D1513',
+                      minHeight: '44px',
                     }}
                   />
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     style={{
-                      padding: '12px 18px',
-                      borderRadius: '12px',
+                      padding: 'clamp(10px, 2vw, 12px) clamp(12px, 2vw, 16px)',
+                      borderRadius: 'clamp(10px, 2vw, 12px)',
                       border: '1px solid #EFE4DE',
-                      fontSize: '14px',
-                      minWidth: '180px',
+                      fontSize: 'clamp(13px, 2vw, 14px)',
+                      minWidth: 'clamp(130px, 35vw, 140px)',
                       outline: 'none',
                       backgroundColor: '#FAF6F0',
                       color: '#2D1513',
                       cursor: 'pointer',
+                      minHeight: '44px',
                     }}
                   >
                     <option value="">Default sorting</option>
@@ -237,36 +309,36 @@ export default function ShopClient({
                   </select>
                 </div>
 
-                {/* QUICK PRICE FILTER PILLS */}
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', paddingTop: '8px', borderTop: '1px solid #F4ECE7' }}>
+                {/* PRICE FILTER BUTTONS */}
+                <div style={{ display: 'flex', gap: 'clamp(6px, 1vw, 8px)', flexWrap: 'wrap', paddingTop: 'clamp(6px, 1vw, 8px)', borderTop: '1px solid #F4ECE7' }}>
                   <button
                     onClick={() => setPriceFilter('all')}
                     style={{
-                      padding: '8px 16px',
+                      padding: 'clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 16px)',
                       borderRadius: '20px',
-                      fontSize: '13px',
+                      fontSize: 'clamp(11px, 2vw, 12px)',
                       fontWeight: '600',
                       border: 'none',
                       cursor: 'pointer',
                       backgroundColor: priceFilter === 'all' ? '#E63967' : '#F8F1ED',
                       color: priceFilter === 'all' ? '#FFFFFF' : '#7A5C55',
-                      transition: 'all 0.2s',
+                      minHeight: '44px',
                     }}
                   >
-                    All Prices
+                    All
                   </button>
                   <button
                     onClick={() => setPriceFilter('under3000')}
                     style={{
-                      padding: '8px 16px',
+                      padding: 'clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 16px)',
                       borderRadius: '20px',
-                      fontSize: '13px',
+                      fontSize: 'clamp(11px, 2vw, 12px)',
                       fontWeight: '600',
                       border: 'none',
                       cursor: 'pointer',
                       backgroundColor: priceFilter === 'under3000' ? '#E63967' : '#F8F1ED',
                       color: priceFilter === 'under3000' ? '#FFFFFF' : '#7A5C55',
-                      transition: 'all 0.2s',
+                      minHeight: '44px',
                     }}
                   >
                     Under KSh 3,000 🏷️
@@ -274,12 +346,12 @@ export default function ShopClient({
                 </div>
               </div>
 
-              {/* UNIFORM PRODUCT GRID */}
+              {/* PRODUCTS GRID (HORIZONTAL CARDS) */}
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                  gap: '24px',
+                  gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(450px, 1fr))',
+                  gap: 'clamp(16px, 3vw, 24px)',
                 }}
               >
                 {processedCakes.map((cake: any) => (
@@ -287,29 +359,21 @@ export default function ShopClient({
                     key={cake.id}
                     style={{
                       backgroundColor: '#FFFFFF',
-                      borderRadius: '20px',
+                      borderRadius: 'clamp(12px, 2vw, 20px)',
                       overflow: 'hidden',
                       border: '1px solid #EFE4DE',
                       boxShadow: '0 6px 20px rgba(45, 21, 19, 0.05)',
                       display: 'flex',
-                      flexDirection: 'column',
-                      height: '100%',
-                      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'translateY(-4px)'
-                      e.currentTarget.style.boxShadow = '0 12px 30px rgba(45, 21, 19, 0.1)'
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'translateY(0)'
-                      e.currentTarget.style.boxShadow = '0 6px 20px rgba(45, 21, 19, 0.05)'
+                      flexDirection: isMobile ? 'column' : 'row',
+                      height: isMobile ? 'auto' : '200px',
                     }}
                   >
-                    {/* FIXED HEIGHT IMAGE CONTAINER */}
+                    {/* IMAGE AREA (LEFT SIDE) */}
                     <div
-                      onClick={() => openOrder(cake.id)}
+                      onClick={() => router.push(`/cake/${cake.id}`)}
                       style={{
-                        height: '220px',
+                        flex: isMobile ? 'none' : '0 0 40%',
+                        height: isMobile ? 'clamp(200px, 40vw, 250px)' : '100%',
                         backgroundColor: '#F8F1ED',
                         position: 'relative',
                         overflow: 'hidden',
@@ -324,10 +388,7 @@ export default function ShopClient({
                             width: '100%',
                             height: '100%',
                             objectFit: 'cover',
-                            transition: 'transform 0.4s ease',
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.06)')}
-                          onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                         />
                       ) : (
                         <div
@@ -336,27 +397,28 @@ export default function ShopClient({
                             alignItems: 'center',
                             justifyContent: 'center',
                             height: '100%',
-                            fontSize: '44px',
+                            fontSize: 'clamp(32px, 5vw, 40px)',
                           }}
                         >
                           {cake.emoji || '🎂'}
                         </div>
                       )}
+
+                      {/* TAG BADGE */}
                       {cake.tag && filterImageUrl(cake.tag) && (
                         <span
                           style={{
                             position: 'absolute',
-                            top: '12px',
-                            left: '12px',
+                            top: 'clamp(8px, 1.5vw, 12px)',
+                            left: 'clamp(8px, 1.5vw, 12px)',
                             backgroundColor: '#E63967',
                             color: '#FFFFFF',
-                            fontSize: '10px',
+                            fontSize: 'clamp(8px, 1.5vw, 9px)',
                             fontWeight: '700',
-                            letterSpacing: '1px',
+                            letterSpacing: '0.5px',
                             textTransform: 'uppercase',
-                            padding: '5px 12px',
-                            borderRadius: '20px',
-                            boxShadow: '0 4px 12px rgba(230, 57, 103, 0.3)',
+                            padding: 'clamp(3px, 0.5vw, 4px) clamp(8px, 1.5vw, 10px)',
+                            borderRadius: 'clamp(10px, 2vw, 12px)',
                           }}
                         >
                           {filterImageUrl(cake.tag)}
@@ -364,63 +426,74 @@ export default function ShopClient({
                       )}
                     </div>
 
-                    {/* CARD BODY (FLEXBOX FILL) */}
+                    {/* DETAILS AREA */}
                     <div
                       style={{
-                        padding: '20px',
+                        padding: 'clamp(12px, 2vw, 16px)',
                         display: 'flex',
                         flexDirection: 'column',
-                        flex: 1,
                         justifyContent: 'space-between',
+                        flexGrow: 1,
+                        gap: 'clamp(10px, 2vw, 12px)',
                       }}
                     >
-                      <div>
-                        <h3
+                      <Link
+                        href={`/cake/${cake.id}`}
+                        style={{
+                          fontFamily: 'Cormorant Garamond, Georgia, serif',
+                          fontSize: 'clamp(16px, 3vw, 18px)',
+                          fontWeight: '700',
+                          color: '#2D1513',
+                          lineHeight: '1.2',
+                          margin: 0,
+                          textDecoration: 'none',
+                        }}
+                      >
+                        {cake.name}
+                      </Link>
+
+                      {/* DESCRIPTION */}
+                      {cake.description && (
+                        <p
                           style={{
-                            fontFamily: 'Cormorant Garamond, Georgia, serif',
-                            fontSize: '19px',
-                            fontWeight: '700',
-                            color: '#2D1513',
-                            marginBottom: '6px',
-                            lineHeight: '1.2',
+                            fontSize: 'clamp(12px, 2vw, 13px)',
+                            color: '#7A5C55',
+                            lineHeight: '1.5',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            margin: 0,
                           }}
                         >
-                          {cake.name}
-                        </h3>
-                        {cake.description && filterImageUrl(cake.description) && (
-                          <p
-                            style={{
-                              fontSize: '13px',
-                              color: '#7A5C55',
-                              lineHeight: '1.5',
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden',
-                              marginBottom: '16px',
-                            }}
-                          >
-                            {filterImageUrl(cake.description)}
-                          </p>
-                        )}
-                      </div>
+                          {filterImageUrl(cake.description)}
+                        </p>
+                      )}
 
-                      {/* PRICE & ORDER BUTTON */}
+                      {/* PRICE & BUTTON ROW */}
                       <div
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          paddingTop: '14px',
-                          borderTop: '1px solid #F4ECE7',
                           marginTop: 'auto',
+                          paddingTop: 'clamp(10px, 2vw, 12px)',
+                          borderTop: '1px solid #F4ECE7',
                         }}
                       >
                         <div>
-                          <span style={{ fontSize: '10px', color: '#8C6D65', textTransform: 'uppercase', fontWeight: '600', display: 'block' }}>
-                            Price
+                          <span
+                            style={{
+                              display: 'block',
+                              fontSize: 'clamp(9px, 1.5vw, 10px)',
+                              fontWeight: '700',
+                              color: '#8A7873',
+                              textTransform: 'uppercase',
+                            }}
+                          >
+                            PRICE
                           </span>
-                          <span style={{ fontSize: '15px', fontWeight: '700', color: '#2D1513' }}>
+                          <span style={{ fontSize: 'clamp(14px, 2vw, 15px)', fontWeight: '700', color: '#2D1513' }}>
                             KSh {Math.round(cake.base_price).toLocaleString()}
                           </span>
                         </div>
@@ -430,15 +503,13 @@ export default function ShopClient({
                             backgroundColor: '#2D1513',
                             color: '#FFFFFF',
                             border: 'none',
-                            padding: '10px 18px',
+                            padding: 'clamp(8px, 1.5vw, 12px) clamp(12px, 2vw, 16px)',
                             borderRadius: '20px',
-                            fontSize: '12px',
+                            fontSize: 'clamp(11px, 2vw, 12px)',
                             fontWeight: '600',
                             cursor: 'pointer',
-                            transition: 'background-color 0.2s',
+                            minHeight: '44px',
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#E63967')}
-                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2D1513')}
                         >
                           Order Now
                         </button>
@@ -450,10 +521,10 @@ export default function ShopClient({
 
               {/* EMPTY STATE */}
               {(!processedCakes || processedCakes.length === 0) && (
-                <div style={{ textAlign: 'center', padding: '80px 20px', backgroundColor: '#FFFFFF', borderRadius: '20px', border: '1px solid #EFE4DE' }}>
-                  <span style={{ fontSize: '36px', display: 'block', marginBottom: '12px' }}>🍰</span>
-                  <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#2D1513', marginBottom: '6px' }}>No cakes found</h3>
-                  <p style={{ color: '#7A5C55', fontSize: '14px' }}>
+                <div style={{ textAlign: 'center', padding: 'clamp(40px, 6vw, 80px) clamp(16px, 3vw, 20px)', backgroundColor: '#FFFFFF', borderRadius: 'clamp(12px, 2vw, 20px)', border: '1px solid #EFE4DE' }}>
+                  <span style={{ fontSize: 'clamp(28px, 5vw, 36px)', display: 'block', marginBottom: 'clamp(10px, 2vw, 12px)' }}>🍰</span>
+                  <h3 style={{ fontSize: 'clamp(16px, 3vw, 18px)', fontWeight: '700', color: '#2D1513', marginBottom: 'clamp(5px, 1vw, 6px)' }}>No cakes found</h3>
+                  <p style={{ color: '#7A5C55', fontSize: 'clamp(13px, 2vw, 14px)' }}>
                     Try adjusting your search keyword or selecting a different category.
                   </p>
                 </div>

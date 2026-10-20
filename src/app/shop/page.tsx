@@ -23,7 +23,7 @@ export default async function ShopPage({
 
   const { data: cakes } = await query.order('name')
 
-  const allCakes = await supabase.from('cakes').select('*').eq('is_active', true)
+  const allCakes = await supabase.from('cakes').select('*, categories(name)').eq('is_active', true)
 
   return (
     <ShopClient

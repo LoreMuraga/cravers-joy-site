@@ -15,8 +15,9 @@ export default function Footer() {
       style={{
         backgroundColor: '#2D1513',
         color: '#FAF6F0',
-        paddingTop: '60px',
-        paddingBottom: '30px',
+        paddingTop: 'clamp(40px, 8vw, 60px)',
+        paddingBottom: 'clamp(20px, 4vw, 30px)',
+        paddingBottom: 'calc(clamp(20px, 4vw, 30px) + env(safe-area-inset-bottom, 0px))',
         fontFamily: 'system-ui, -apple-system, sans-serif',
         borderTop: '1px solid rgba(212, 175, 55, 0.2)',
       }}
@@ -25,15 +26,15 @@ export default function Footer() {
         style={{
           maxWidth: '1200px',
           margin: '0 auto',
-          padding: '0 20px',
+          padding: '0 clamp(16px, 4vw, 20px)',
         }}
       >
-        {/* TOP ROW: 3 COLUMNS */}
+        {/* TOP ROW: 4 COLUMNS */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '40px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '32px',
             marginBottom: '40px',
           }}
         >
@@ -244,6 +245,45 @@ export default function Footer() {
                 <span>Mon–Sat: 8:00 AM – 6:00 PM (Closed Sun)</span>
               </div>
             </div>
+          </div>
+
+          {/* COLUMN 4: LEGAL */}
+          <div>
+            <h4
+              style={{
+                fontSize: '13px',
+                fontWeight: '700',
+                color: '#D4AF37',
+                letterSpacing: '1.5px',
+                textTransform: 'uppercase',
+                marginBottom: '20px',
+              }}
+            >
+              Legal
+            </h4>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {[
+                { label: 'Terms of Service', href: '/terms' },
+                { label: 'Cancellation Policy', href: '/cancellation-policy' },
+                { label: 'Privacy Policy', href: '/privacy' },
+              ].map((link, i) => (
+                <li key={i}>
+                  <Link
+                    href={link.href}
+                    style={{
+                      color: '#E0D2C7',
+                      textDecoration: 'none',
+                      fontSize: '14px',
+                      transition: 'color 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#E63967')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = '#E0D2C7')}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 

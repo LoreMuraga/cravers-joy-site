@@ -233,7 +233,7 @@ Name: ${name || '-'}`
               id="cat"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-4 py-3.5 sm:py-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
+              className="w-full px-3 py-2.5 rounded-lg border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
             >
               <option value="">Select a category</option>
               {categories.map((category) => (
@@ -249,7 +249,7 @@ Name: ${name || '-'}`
               id="ck"
               value={selectedCake}
               onChange={(e) => setSelectedCake(e.target.value)}
-              className="w-full px-4 py-3.5 sm:py-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
+              className="w-full px-3 py-2.5 rounded-lg border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
             >
               <option value="">Select a cake</option>
               {cakes
@@ -261,7 +261,7 @@ Name: ${name || '-'}`
               ))}
             </select>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="sz" className="block text-sm font-semibold text-mahogany mb-2">
                 {cake?.price_type === 'each' ? cake.unit_label : cake?.price_type === 'from' ? 'Tiers / size (kg)' : 'Size (kg)'}
@@ -273,7 +273,7 @@ Name: ${name || '-'}`
                 step="0.5"
                 value={size}
                 onChange={(e) => setSize(e.target.value)}
-                className="w-full px-4 py-3.5 sm:py-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
+                className="w-full px-3 py-2.5 rounded-lg border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
               />
             </div>
             <div>
@@ -282,7 +282,7 @@ Name: ${name || '-'}`
                 id="fl"
                 value={flavor}
                 onChange={(e) => setFlavor(e.target.value)}
-                className="w-full px-4 py-3.5 sm:py-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
+                className="w-full px-3 py-2.5 rounded-lg border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
               >
                 {flavors.map((flavor) => (
                   <option key={flavor.id} value={flavor.name}>
@@ -300,11 +300,11 @@ Name: ${name || '-'}`
                 placeholder="e.g. Happy 30th Wanjiru"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full px-4 py-3.5 sm:py-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
+                className="w-full px-3 py-2.5 rounded-lg border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
               />
             </div>
           )}
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="dt" className="block text-sm font-semibold text-mahogany mb-2">Date needed</label>
               <input
@@ -313,7 +313,7 @@ Name: ${name || '-'}`
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 min={new Date().toISOString().slice(0, 10)}
-                className="w-full px-4 py-3.5 sm:py-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
+                className="w-full px-3 py-2.5 rounded-lg border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
               />
             </div>
             <div>
@@ -323,7 +323,7 @@ Name: ${name || '-'}`
                 placeholder="Your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3.5 sm:py-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
+                className="w-full px-3 py-2.5 rounded-lg border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
               />
             </div>
           </div>
@@ -352,14 +352,13 @@ Name: ${name || '-'}`
                 type="button"
                 onClick={() => setDeliveryType('collection')}
                 style={{
-                  padding: '14px',
-                  borderRadius: '12px',
-                  fontSize: '14px',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  fontSize: '13px',
                   fontWeight: '600',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   border: deliveryType === 'collection' ? '2px solid #3D231D' : '1px solid #EFE4DE',
-                  /* FIX HERE: Force white text when active, dark text when inactive */
                   backgroundColor: deliveryType === 'collection' ? '#3D231D' : '#F8F1ED',
                   color: deliveryType === 'collection' ? '#FFFFFF' : '#3D231D',
                 }}
@@ -372,14 +371,13 @@ Name: ${name || '-'}`
                 type="button"
                 onClick={() => setDeliveryType('delivery')}
                 style={{
-                  padding: '14px',
-                  borderRadius: '12px',
-                  fontSize: '14px',
+                  padding: '12px',
+                  borderRadius: '10px',
+                  fontSize: '13px',
                   fontWeight: '600',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   border: deliveryType === 'delivery' ? '2px solid #3D231D' : '1px solid #EFE4DE',
-                  /* FIX HERE: Force white text when active, dark text when inactive */
                   backgroundColor: deliveryType === 'delivery' ? '#3D231D' : '#F8F1ED',
                   color: deliveryType === 'delivery' ? '#FFFFFF' : '#3D231D',
                 }}
@@ -395,7 +393,7 @@ Name: ${name || '-'}`
               value={deliveryArea}
               onChange={(e) => setDeliveryArea(e.target.value)}
               disabled={deliveryType === 'collection'}
-              className="w-full px-4 py-3.5 sm:py-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40 disabled:opacity-50"
+              className="w-full px-3 py-2.5 rounded-lg border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40 disabled:opacity-50"
             >
               <option value="">Select delivery area</option>
               {deliveryAreas.map((area) => (
@@ -415,36 +413,36 @@ Name: ${name || '-'}`
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full px-4 py-3.5 sm:py-3 rounded-xl border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
+              className="w-full px-3 py-2.5 rounded-lg border border-cream-border text-sm focus:outline-none focus:ring-2 focus:ring-blush/40"
             />
           </div>
           {estimate && (
-            <div className="bg-cream-soft p-4 rounded-2xl border border-cream-border space-y-2">
-              <div className="flex justify-between text-sm">
+            <div className="bg-cream-soft p-3 sm:p-4 rounded-2xl border border-cream-border space-y-2">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span className="text-mahogany">{estimate.cake.name}{estimate.cake.price_type === 'from' ? '' : ` × ${estimate.quantity}`}</span>
                 <span className="font-semibold text-mahogany">KSh {Math.round(estimate.base).toLocaleString()}{estimate.cake.price_type === 'from' ? '+' : ''}</span>
               </div>
               {estimate.rush > 0 && (
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-blush">Rush (15%)</span>
                   <span className="font-semibold text-blush">KSh {Math.round(estimate.rush).toLocaleString()}</span>
                 </div>
               )}
               {estimate.discount > 0 && (
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-emerald-600">You're in luck! {offerDiscount}% off</span>
                   <span className="font-semibold text-emerald-600">-KSh {Math.round(estimate.discount).toLocaleString()}</span>
                 </div>
               )}
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span className="text-mahogany">Delivery ({deliveryType === 'delivery' ? deliveryAreas.find(a => a.id === deliveryArea)?.name || 'Select area' : 'Collection'})</span>
                 <span className="font-semibold text-mahogany">{estimate.fee ? `KSh ${estimate.fee.toLocaleString()}` : 'Free'}</span>
               </div>
-              <div className="flex justify-between text-base font-bold border-t border-cream-border pt-2 mt-2">
+              <div className="flex justify-between text-sm sm:text-base font-bold border-t border-cream-border pt-2 mt-2">
                 <span className="text-mahogany">Total Estimate</span>
                 <span className="text-blush">KSh {Math.round(estimate.total).toLocaleString()}{estimate.cake.price_type === 'from' ? '+' : ''}</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs sm:text-sm">
                 <span className="text-mahogany-soft">50% deposit to confirm</span>
                 <span className="font-semibold text-mahogany">KSh {Math.round(estimate.total / 2).toLocaleString()}</span>
               </div>
@@ -453,9 +451,9 @@ Name: ${name || '-'}`
           )}
           <button
             onClick={sendWhatsApp}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 rounded-full flex items-center justify-center gap-2 shadow-lg transition"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 sm:py-4 rounded-full flex items-center justify-center gap-2 shadow-lg transition text-sm sm:text-base"
           >
-            <i className="fa-brands fa-whatsapp text-xl"></i> Send order on WhatsApp
+            <i className="fa-brands fa-whatsapp text-lg sm:text-xl"></i> Send order on WhatsApp
           </button>
           <p className="text-xs text-center text-mahogany-soft">
             Final price is confirmed by Milka. 50% deposit holds your date.
