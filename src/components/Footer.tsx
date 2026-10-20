@@ -16,7 +16,6 @@ export default function Footer() {
         backgroundColor: '#2D1513',
         color: '#FAF6F0',
         paddingTop: 'clamp(40px, 8vw, 60px)',
-        paddingBottom: 'clamp(20px, 4vw, 30px)',
         paddingBottom: 'calc(clamp(20px, 4vw, 30px) + env(safe-area-inset-bottom, 0px))',
         fontFamily: 'system-ui, -apple-system, sans-serif',
         borderTop: '1px solid rgba(212, 175, 55, 0.2)',
